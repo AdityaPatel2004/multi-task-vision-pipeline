@@ -59,7 +59,27 @@ cd multi-task-vision-pipeline
 pip install -r requirements.txt
 ```
 
-> **Note on Datasets and Weights:** Due to file size limits on GitHub (Large `.pth` weights > 200MB), the raw spatial weights and full 300MB dataset are excluded from this repository via `.gitignore`. 
+### 📦 Dataset & Pre-trained Weights
+
+Due to GitHub's file size limitations, the raw multi-task dataset and the pre-trained `.pth` models (approx 600MB total) are hosted externally.
+
+**[Download the Dataset and Weights from Google Drive]((Insert your Google Drive Link Here))**
+
+After downloading, extract the contents into the project root so your final structure looks like this:
+
+```
+multi-task-vision-pipeline/
+├── Dataset/                            # Put the extracted dataset here
+├── classification/
+│   ├── model.py
+│   └── weights/
+│       └── best_model.pth              # Put the 95MB classification weights here
+├── segmentation/
+│   ├── model.py
+│   └── weights/
+│       └── best_model.pth              # Put the 256MB segmentation weights here
+...
+```
 
 ---
 
