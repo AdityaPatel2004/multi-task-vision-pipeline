@@ -1,162 +1,68 @@
-# Assignment 2: Multilabel Classification & Semantic Segmentation
+# Multi-Task Visual Understanding Pipeline
 
-## Submission Structure
+![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
+![PyTorch](https://img.shields.io/badge/PyTorch-Deep%20Learning-EE4C2C.svg?logo=pytorch)
+![Status](https://img.shields.io/badge/Status-Completed-success.svg)
 
-You **MUST** follow this exact folder structure. Your submission will be evaluated by running your code live on the test set — **do not hardcode or pre-save predictions**.
+An end-to-end Computer Vision pipeline designed to extract dense semantic information from images. This project implements state-of-the-art deep learning architectures to simultaneously solve two core visual understanding tasks: **Multi-label Classification** and **Semantic Segmentation**. 
 
-## Submission Folder Structure
-
-```
-<Roll_no>_<name>_Assignment_2/
-├── classification/
-│   ├── model.py              # Must implement ClassificationModel class
-│   └── weights/              # Your saved model weights
-├── segmentation/
-│   ├── model.py              # Must implement SegmentationModel class
-│   └── weights/              # Your saved model weights
-├── submission.csv             # Kaggle submission file
-├── training_notebook.ipynb    # Your training code and analysis
-├── statistical_tests.ipynb    # Statistical analysis (see below)
-├── requirements.txt           # pip dependencies
-└── report.pdf                 # Short report
-```
+Unlike standard ML projects, this pipeline emphasizes **statistical rigor** by employing non-parametric tests to formally evaluate model performance and guarantee that improvements are statistically significant.
 
 ---
 
-## API Specification (MANDATORY)
+## 🚀 Key Features
 
-### Task 1: Multilabel Classification
-
-In `classification/model.py`, implement:
-
-```python
-import numpy as np
-from PIL import Image
-
-class ClassificationModel:
-    def __init__(self, weights_dir: str):
-        """
-        Initialize model and load weights.
-  
-        Args:
-            weights_dir: relative path to classification/weights/ folder
-        """
-        # Load your trained model here
-        pass
-
-    def predict(self, image: np.ndarray) -> dict:
-        """
-        Predict which of the 20 classes are present in the image.
-  
-        Args:
-            image: RGB image as numpy array of shape (H, W, 3), dtype uint8
-  
-        Returns:
-            dict mapping class_name (str) -> probability (float in [0, 1])
-            Must contain ALL 20 classes:
-                aeroplane, bicycle, bird, boat, bottle, bus, car, cat,
-                chair, cow, diningtable, dog, horse, motorbike, person,
-                pottedplant, sheep, sofa, train, tvmonitor
-  
-        Example:
-            {"aeroplane": 0.02, "bicycle": 0.95, "person": 0.88, ...}
-        """
-        pass
-```
-
-### Task 2: Semantic Segmentation
-
-In `segmentation/model.py`, implement:
-
-```python
-import numpy as np
-from PIL import Image
-
-class SegmentationModel:
-    def __init__(self, weights_dir: str):
-        """
-        Initialize model and load weights.
-    
-        Args:
-            weights_dir: absolute path to segmentation/weights/ folder
-        """
-        # Load your trained model here
-        pass
-
-    def predict(self, image: np.ndarray) -> np.ndarray:
-        """
-        Predict semantic segmentation mask for the image.
-    
-        Args:
-            image: RGB image as numpy array of shape (H, W, 3), dtype uint8
-        
-        Returns:
-            Segmentation mask as numpy array of shape (H, W), dtype uint8
-            Pixel values: 0 = background, 1-20 = class index, 255 = ignore
-        
-            Class index mapping:
-                1=aeroplane, 2=bicycle, 3=bird, 4=boat, 5=bottle,
-                6=bus, 7=car, 8=cat, 9=chair, 10=cow,
-                11=diningtable, 12=dog, 13=horse, 14=motorbike, 15=person,
-                16=pottedplant, 17=sheep, 18=sofa, 19=train, 20=tvmonitor
-        """
-        pass
-```
+* **Semantic Segmentation**: Pixel-level prediction across 20 diverse real-world object classes (e.g., vehicles, animals, indoor items) handling complex occlusions and object boundaries.
+* **Multi-Label Classification**: Robust classification models capable of identifying multiple non-mutually exclusive, co-occurring objects within a single image context.
+* **Rigorous Statistical Validation**: Moving beyond point estimates (like simple Accuracy or F1 scores) by implementing:
+  * **Wilcoxon Signed-Rank Test** for comparing model performances pairwise.
+  * **Bootstrap Confidence Intervals** to estimate the true population performance and assess model variance.
+* **Dimensionality Reduction (PCA)**: Used for data analysis and feature extraction to handle high-dimensional image inputs effectively.
+* **Modular Architecture**: Clean, modular Object-Oriented design separated into modular domains (`classification/` and `segmentation/`) for extensible deployment.
 
 ---
 
-## Important Rules
+## 🧠 Technical Architecture
 
-1. **No hardcoded predictions.** Your model must perform actual inference.
-2. **`predict()` must work on any image**, including ones not in the training set.
-3. **Do not modify** the dataset or evaluation scripts.
-4. **Model loading must be self-contained** — all weights go in the `weights/` folder.
-5. Your code will be evaluated on the **test split** which you received without looking up ground truth.
+The project is logically divided into distinct modules, adhering to strict API specifications designed for automated deployment and testing:
 
-## Dataset
+1. **Classification Pipeline (`classification/model.py`)** 
+   - Takes dynamic input sizes, processes standard RGB `uint8` images, and outputs calibrated probability confidence mappings for 20 unique classes.
+2. **Segmentation Pipeline (`segmentation/model.py`)** 
+   - Dedicated dense-prediction architecture returning 2D segmentation masks. Implements specific boundary-aware background/foreground separation mapping all 20 classes + ignore regions.
+3. **Statistical Framework (`statistical_tests.ipynb`)**
+   - Pure statistical assessment engine avoiding data dredging to definitively answer if model $A$ outperforms model $B$ using rigorous non-parametric hypothesis testing.
 
-The dataset is in `Dataset/` with this structure:
+---
 
-```
-Dataset/
-├── train/
-│   ├── images/              # JPEG images for training
-│   ├── annotations/         # XML annotations (bounding boxes + classes)  
-│   ├── segmentation_masks/  # PNG semantic segmentation ground truth
-│   └── labels.csv           # Multilabel binary matrix
-├── test/
-│   ├── images/              # JPEG images for testing
-├── dataset_info.json
-└── README.md
-```
+## 📊 Evaluation Metrics
 
-## Kaggle Leaderboard Submission
+Models in this project are optimized and evaluated across multiple stringent metrics to ensure qualitative and quantitative excellence:
 
-You must generate a `submission.csv` file containing predictions for both tasks on the test set. This file will be uploaded to Kaggle to evaluate your leaderboard score.
+* **Classification**: Monitored via **Mean F1-Score** (to penalize class imbalance and reward true positives across multi-class overlapping inputs).
+* **Segmentation**: Evaluated using **mIoU** (mean Intersection over Union), **Pixel Accuracy**, and **Per-class IoU**.
 
-The CSV must have **exactly 3 columns**:
+---
 
-| Column | Description |
-|--------|-------------|
-| `image_id` | Image filename stem (e.g. `img_00005`) |
-| `classification` | Space-separated list of predicted class names (threshold ≥ 0.5, or `background` if none) |
-| `segmentation_rle` | Run-Length Encoding (RLE) of the predicted segmentation mask |
+## 🛠️ Usage & Setup
 
-### Example `submission.csv`
+### Prerequisites
+* Python 3.9+
+* PyTorch & standard scientific packages
 
-```csv
-image_id,classification,segmentation_rle
-img_00005,person car,3 10 25 8 100 15
-img_00009,cat,5 20 50 30
-img_00010,person bicycle dog,2 5 12 18 40 22
+```bash
+# Clone the repository
+git clone https://github.com/AdityaPatel2004/multi-task-vision-pipeline.git
+cd multi-task-vision-pipeline
+
+# Install dependencies
+pip install -r requirements.txt
 ```
 
-### Formatting Details
+> **Note on Datasets and Weights:** Due to file size limits on GitHub (Large `.pth` weights > 200MB), the raw spatial weights and full 300MB dataset are excluded from this repository via `.gitignore`. 
 
-- **Classification**: List only the class names your model predicts as present, separated by a single space. Use exact class names as listed in `dataset_info.json`. If no class is predicted, write `background`.
-- **Segmentation**: Encode your 2D segmentation mask using Run-Length Encoding (RLE) on the row-major flattened mask. Format is space-separated triplets of `<start> <length> <class_value>` (e.g., `start1 length1 value1 start2 length2 value2...`). Only encode non-zero (foreground) pixels. Make sure the mask is resized to the original image dimensions before encoding.
+---
 
-## Evaluation Metrics
+## 🤝 Conclusion
 
-- **Classification**: mean F1-score
-- **Segmentation**: mIoU (mean Intersection-over-Union), pixel accuracy, per-class IoU
+This project serves as a comprehensive demonstration of applied Computer Vision, proving the ability to not just build complex deep learning models, but effectively orchestrate, evaluate, and statistically defend their validity.
