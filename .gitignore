@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Mac OS folder attributes
+.DS_Store
+
+# Machine Learning Weights & Data
+*.pth
+*.pt
+*.h5
+*.onnx
+Dataset/
+data/
+logs/
+submission.csv
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
