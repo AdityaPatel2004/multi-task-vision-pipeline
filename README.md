@@ -1,88 +1,70 @@
-# Multi-Task Visual Understanding Pipeline
+# Multi-Task Classification and Semantic Segmentation Pipeline
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
 ![PyTorch](https://img.shields.io/badge/PyTorch-Deep%20Learning-EE4C2C.svg?logo=pytorch)
-![Status](https://img.shields.io/badge/Status-Completed-success.svg)
 
-An end-to-end Computer Vision pipeline designed to extract dense semantic information from images. This project implements state-of-the-art deep learning architectures to simultaneously solve two core visual understanding tasks: **Multi-label Classification** and **Semantic Segmentation**. 
+## Overview
 
-Unlike standard ML projects, this pipeline emphasizes **statistical rigor** by employing non-parametric tests to formally evaluate model performance and guarantee that improvements are statistically significant.
+This repository contains the implementation of an end-to-end computer vision pipeline designed for simultaneous multi-label image classification and semantic segmentation. The system predicts and segments 20 object classes, prioritizing robust model evaluation through formal statistical significance testing rather than relying solely on point estimates.
 
----
+## Methodology
 
-## 🚀 Key Features
+1. **Multi-Label Classification (`classification/`)**
+   - Formulated to predict the presence of 20 non-mutually exclusive object classes within standard RGB imagery.
+   - Performance optimized and evaluated using Mean F1-Score strategies to account for dataset imbalances.
 
-* **Semantic Segmentation**: Pixel-level prediction across 20 diverse real-world object classes (e.g., vehicles, animals, indoor items) handling complex occlusions and object boundaries.
-* **Multi-Label Classification**: Robust classification models capable of identifying multiple non-mutually exclusive, co-occurring objects within a single image context.
-* **Rigorous Statistical Validation**: Moving beyond point estimates (like simple Accuracy or F1 scores) by implementing:
-  * **Wilcoxon Signed-Rank Test** for comparing model performances pairwise.
-  * **Bootstrap Confidence Intervals** to estimate the true population performance and assess model variance.
-* **Dimensionality Reduction (PCA)**: Used for data analysis and feature extraction to handle high-dimensional image inputs effectively.
-* **Modular Architecture**: Clean, modular Object-Oriented design separated into modular domains (`classification/` and `segmentation/`) for extensible deployment.
+2. **Semantic Segmentation (`segmentation/`)**
+   - Dense prediction architecture outputting 2D segmentation masks for background and foreground class boundaries.
+   - Evaluated across mean Intersection over Union (mIoU), pixel accuracy, and per-class IoU metrics.
 
----
+3. **Statistical Significance Testing (`statistical_tests.ipynb`)**
+   - Applies the **Wilcoxon Signed-Rank Test** for rigorous pairwise evaluation of model variations.
+   - Utilizes **Bootstrap Confidence Intervals** to estimate population variance and true model performance bounds.
 
-## 🧠 Technical Architecture
+4. **Analysis**
+   - Incorporates Principal Component Analysis (PCA) for dimensionality reduction and feature extraction visualization.
 
-The project is logically divided into distinct modules, adhering to strict API specifications designed for automated deployment and testing:
+## Repository Structure
 
-1. **Classification Pipeline (`classification/model.py`)** 
-   - Takes dynamic input sizes, processes standard RGB `uint8` images, and outputs calibrated probability confidence mappings for 20 unique classes.
-2. **Segmentation Pipeline (`segmentation/model.py`)** 
-   - Dedicated dense-prediction architecture returning 2D segmentation masks. Implements specific boundary-aware background/foreground separation mapping all 20 classes + ignore regions.
-3. **Statistical Framework (`statistical_tests.ipynb`)**
-   - Pure statistical assessment engine avoiding data dredging to definitively answer if model $A$ outperforms model $B$ using rigorous non-parametric hypothesis testing.
+```text
+.
+├── classification/          # Classification model definition and inference API
+├── segmentation/            # Segmentation model definition and inference API
+├── training_notebook.ipynb  # Primary training loop, data pipelines, and loss formulations
+├── statistical_tests.ipynb  # Non-parametric testing scripts
+└── requirements.txt         # Environment dependencies
+```
 
----
+## Setup and Inference
 
-## 📊 Evaluation Metrics
+### Requirements
 
-Models in this project are optimized and evaluated across multiple stringent metrics to ensure qualitative and quantitative excellence:
-
-* **Classification**: Monitored via **Mean F1-Score** (to penalize class imbalance and reward true positives across multi-class overlapping inputs).
-* **Segmentation**: Evaluated using **mIoU** (mean Intersection over Union), **Pixel Accuracy**, and **Per-class IoU**.
-
----
-
-## 🛠️ Usage & Setup
-
-### Prerequisites
-* Python 3.9+
-* PyTorch & standard scientific packages
+Ensure a Python 3.9+ runtime environment is active.
 
 ```bash
-# Clone the repository
 git clone https://github.com/AdityaPatel2004/multi-task-vision-pipeline.git
 cd multi-task-vision-pipeline
-
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 📦 Dataset & Pre-trained Weights
+### Dataset and Pre-trained Models
 
-Due to GitHub's file size limitations, the raw multi-task dataset and the pre-trained `.pth` models (approx 600MB total) are hosted externally.
+Due to GitHub's file storage limits, the annotated datasets and pre-trained state dictionaries (`.pth`) are hosted independently.
 
-**[Download the Dataset and Weights from Google Drive](https://drive.google.com/drive/folders/1MFpQVgAqFX2hu9FSoIQQ08TZMoSMlE-9?usp=sharing)**
+**[Download Dataset and Model Weights](https://drive.google.com/drive/folders/1MFpQVgAqFX2hu9FSoIQQ08TZMoSMlE-9?usp=sharing)**
 
-To prevent file name conflicts in Google Drive, the weights are named `classification_best_model.pth` and `segmentation_best_model.pth`. After downloading, you **must rename them back to `best_model.pth`** and extract the dataset into the project root so exactly this folder structure is achieved:
+To prevent filename conflicts in the external Drive, model weights are prefixed by their respective domains. Extract the dataset into the root directory and rename the weight files strictly as outlined below prior to execution:
 
-```
+```text
 multi-task-vision-pipeline/
-├── Dataset/                            # Put the extracted dataset here
+├── Dataset/                            # Extracted dataset files
 ├── classification/
 │   ├── model.py
 │   └── weights/
-│       └── best_model.pth              # Rename classification_best_model.pth to this
+│       └── best_model.pth              # Rename from classification_best_model.pth
 ├── segmentation/
 │   ├── model.py
 │   └── weights/
-│       └── best_model.pth              # Rename segmentation_best_model.pth to this
+│       └── best_model.pth              # Rename from segmentation_best_model.pth
 ...
 ```
-
----
-
-## 🤝 Conclusion
-
-This project serves as a comprehensive demonstration of applied Computer Vision, proving the ability to not just build complex deep learning models, but effectively orchestrate, evaluate, and statistically defend their validity.
