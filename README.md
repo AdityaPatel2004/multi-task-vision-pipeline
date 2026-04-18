@@ -63,9 +63,9 @@ pip install -r requirements.txt
 
 Due to GitHub's file size limitations, the raw multi-task dataset and the pre-trained `.pth` models (approx 600MB total) are hosted externally.
 
-**[Download the Dataset and Weights from Google Drive]((Insert your Google Drive Link Here))**
+**[Download the Dataset and Weights from Google Drive](https://drive.google.com/drive/folders/1MFpQVgAqFX2hu9FSoIQQ08TZMoSMlE-9?usp=sharing)**
 
-After downloading, extract the contents into the project root so your final structure looks like this:
+To prevent file name conflicts in Google Drive, the weights are named `classification_best_model.pth` and `segmentation_best_model.pth`. After downloading, you **must rename them back to `best_model.pth`** and extract the dataset into the project root so exactly this folder structure is achieved:
 
 ```
 multi-task-vision-pipeline/
@@ -73,11 +73,11 @@ multi-task-vision-pipeline/
 ├── classification/
 │   ├── model.py
 │   └── weights/
-│       └── best_model.pth              # Put the 95MB classification weights here
+│       └── best_model.pth              # Rename classification_best_model.pth to this
 ├── segmentation/
 │   ├── model.py
 │   └── weights/
-│       └── best_model.pth              # Put the 256MB segmentation weights here
+│       └── best_model.pth              # Rename segmentation_best_model.pth to this
 ...
 ```
 
